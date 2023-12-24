@@ -1,2 +1,2 @@
-# weekly-report-msib-generator
-capek copas manual
+# Weekly Report MSIB Generator
+biar gak capek copas manual buat laporan akhir msib~ semangat
