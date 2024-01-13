@@ -29,11 +29,11 @@ def get_report_excel(email, password):
     activity_url = "https://api.kampusmerdeka.kemdikbud.go.id/mbkm/mahasiswa/activities"
     id_kegiatan_result = requests.get(activity_url, headers=headers)
     response_data = id_kegiatan_result.json().get("data", [])
-    filtered_activities = [
-        activity for activity in response_data if activity.get("activity_in_progress")]
+    response_data = sorted(response_data, key=lambda x: x.get(
+        'akhir_kegiatan'), reverse=True)
 
-    if filtered_activities:
-        id_kegiatan = filtered_activities[0]["id"]
+    if response_data:
+        id_kegiatan = response_data[0]["id"]
     else:
         return
 
@@ -62,7 +62,6 @@ def get_report_excel(email, password):
     return output_buf
 
 
-
 @app.route("/process", methods=["POST"])
 def process():
     email = request.form.get("email")
@@ -70,16 +69,18 @@ def process():
 
     if not email or not password:
         return "salah"
-        
+
     output_buf = get_report_excel(email, password)
-    if not output_buf: 
+    if not output_buf:
         return "gagal"
 
     return send_file(output_buf, as_attachment=True, download_name="Weekly Report.xlsx", mimetype="application/ms-excel")
 
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
